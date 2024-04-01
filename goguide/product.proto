@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/silverflin/go-grpc";
+
+package goguide;
+
+
+message Product {
+    string id = 1;
+    string name = 2;
+    string market = 3;
+    float current_price = 4;
+    google.protobuf.Timestamp last_updated_time = 5;
+}
+
+service Products{
+    rpc GetProductsByPrice(ProductListRequest) returns (ProductList){}
+}
+
+message ProductList {
+    repeated Product products = 1;
+}
+
+message ProductListRequest {
+    string product_name = 1;
+}
