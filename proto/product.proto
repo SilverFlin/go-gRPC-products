@@ -17,6 +17,7 @@ message Product {
 
 service Products{
     rpc GetProductsByPrice(ProductListRequest) returns (ProductList){}
+    rpc GetProductsNames(Empty) returns (ProductNamesList){}
 }
 
 message ProductList {
@@ -25,4 +26,10 @@ message ProductList {
 
 message ProductListRequest {
     string product_name = 1;
+}
+
+message Empty {}
+
+message ProductNamesList {
+    repeated string product_name = 1;
 }

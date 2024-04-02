@@ -2,9 +2,9 @@ package services
 
 import (
 	"context"
-	pb "github.com/silverflin/go-rpc/proto"
 	"github.com/silverflin/go-rpc/internal/messaging"
 	"github.com/silverflin/go-rpc/internal/model"
+	pb "github.com/silverflin/go-rpc/proto"
 	"log"
 	"sort"
 )
@@ -23,9 +23,18 @@ func (s ProductListServer) GetProductsByPrice(ctx context.Context, req *pb.Produ
 	}
 	OrderProductListByPrice(filteredProductList)
 
-	messaging.SendToProductQueue("List request")
+	go messaging.SendToProductQueue("List request")
 
 	return filteredProductList, nil
+}
+
+func (s ProductListServer) GetProductsNames(ctx context.Context, empty *pb.Empty) (*pb.ProductNamesList, error) {
+	log.Print("New Request: products names")
+
+	productsNames := model.GetProductsNames()
+
+	go messaging.SendToProductQueue("Products Names Request")
+	return productsNames, nil
 }
 
 func OrderProductListByPrice(l *pb.ProductList) {

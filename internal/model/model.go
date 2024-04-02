@@ -3,10 +3,23 @@ package model
 import (
 	pb "github.com/silverflin/go-rpc/proto"
 	time "google.golang.org/protobuf/types/known/timestamppb"
+	"slices"
 )
 
 func GetAllProducts() []*pb.Product {
 	return products
+}
+
+func GetProductsNames() *pb.ProductNamesList {
+	productsNames := &pb.ProductNamesList{ProductName: make([]string, 0)}
+
+	for _, val := range GetAllProducts() {
+		if !slices.Contains(productsNames.ProductName, val.Name) {
+			productsNames.ProductName = append(productsNames.ProductName, val.Name)
+		}
+	}
+
+	return productsNames
 }
 
 var products = initializeProducts()
