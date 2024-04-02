@@ -5,6 +5,7 @@ import (
 	pb "github.com/silverflin/go-rpc/goguide"
 	"context"
 	"github.com/silverflin/go-rpc/internal/model"
+	"github.com/silverflin/go-rpc/internal/messaging"
     "log"
 )
 
@@ -23,6 +24,8 @@ func (s ProductListServer) GetProductsByPrice(ctx context.Context, req *pb.Produ
 		}
 	}
     OrderProductListByPrice(filteredProductList)
+
+   messaging.SendToProductQueue("List request")
 
 	return filteredProductList, nil
 }
