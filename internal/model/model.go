@@ -1,58 +1,16 @@
-package main
+package model
 
 import (
-	"context"
-	"fmt"
-	"log"
-	"net"
-	"sort"
-
-	pb "github.com/silverflin/go-rpc/goguide"
-	"google.golang.org/grpc"
+    pb "github.com/silverflin/go-rpc/goguide"
 	time "google.golang.org/protobuf/types/known/timestamppb"
 )
 
-type productListServer struct {
-	pb.UnimplementedProductsServer
+func GetAllProducts() []*pb.Product {
+    return products
 }
 
-var products = InitializeProducts()
-
-func (s productListServer) GetProductsByPrice(ctx context.Context, req *pb.ProductListRequest) (*pb.ProductList, error) {
-	filteredProductList := &pb.ProductList{Products: make([]*pb.Product, 0)}
-	for _, prod := range products {
-		if prod.Name == req.ProductName {
-			filteredProductList.Products = append(filteredProductList.Products, prod)
-		}
-	}
-    orderProductListByPrice(filteredProductList)
-
-	return filteredProductList, nil
-}
-
-func  orderProductListByPrice(l *pb.ProductList){
-    sort.Slice(l.Products, func(i, j int) bool {
-        return l.Products[i].CurrentPrice > l.Products[j].CurrentPrice
-    })
-}
-
-func main() {
-	lis, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", 50051))
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
-	}
-	var opts []grpc.ServerOption
-	grpcServer := grpc.NewServer(opts...)
-	pb.RegisterProductsServer(grpcServer, newServer())
-	grpcServer.Serve(lis)
-}
-
-func newServer() *productListServer {
-	s := &productListServer{}
-	return s
-}
-
-func InitializeProducts() []*pb.Product {
+var products = initializeProducts()
+func initializeProducts() []*pb.Product {
     // Using make to create a slice of Product structs with initial values
     products := make([]*pb.Product, 0)
 
