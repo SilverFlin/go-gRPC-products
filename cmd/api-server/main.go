@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	pb "github.com/silverflin/go-rpc/goguide"
+	pb "github.com/silverflin/go-rpc/proto"
 	"github.com/silverflin/go-rpc/internal/services"
 	"google.golang.org/grpc"
 	"log"

@@ -2,7 +2,7 @@ package services
 
 import (
 	"context"
-	pb "github.com/silverflin/go-rpc/goguide"
+	pb "github.com/silverflin/go-rpc/proto"
 	"github.com/silverflin/go-rpc/internal/messaging"
 	"github.com/silverflin/go-rpc/internal/model"
 	"log"

@@ -1,7 +1,7 @@
 package model
 
 import (
-	pb "github.com/silverflin/go-rpc/goguide"
+	pb "github.com/silverflin/go-rpc/proto"
 	time "google.golang.org/protobuf/types/known/timestamppb"
 )
 
