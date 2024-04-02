@@ -4,7 +4,7 @@ import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/silverflin/go-grpc";
 
-package goguide;
+package proto;
 
 
 message Product {

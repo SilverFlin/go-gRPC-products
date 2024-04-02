@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             v3.12.4
-// source: goguide/product.proto
+// source: proto/product.proto
 
 package go_grpc
 
@@ -35,7 +35,7 @@ func NewProductsClient(cc grpc.ClientConnInterface) ProductsClient {
 
 func (c *productsClient) GetProductsByPrice(ctx context.Context, in *ProductListRequest, opts ...grpc.CallOption) (*ProductList, error) {
 	out := new(ProductList)
-	err := c.cc.Invoke(ctx, "/goguide.Products/GetProductsByPrice", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/proto.Products/GetProductsByPrice", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -80,7 +80,7 @@ func _Products_GetProductsByPrice_Handler(srv interface{}, ctx context.Context, 
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/goguide.Products/GetProductsByPrice",
+		FullMethod: "/proto.Products/GetProductsByPrice",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ProductsServer).GetProductsByPrice(ctx, req.(*ProductListRequest))
@@ -92,7 +92,7 @@ func _Products_GetProductsByPrice_Handler(srv interface{}, ctx context.Context, 
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Products_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "goguide.Products",
+	ServiceName: "proto.Products",
 	HandlerType: (*ProductsServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -101,5 +101,5 @@ var Products_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "goguide/product.proto",
+	Metadata: "proto/product.proto",
 }
