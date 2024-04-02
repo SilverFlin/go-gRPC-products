@@ -9,7 +9,8 @@ import (
 	"net"
 )
 
-var URL = "localhost"
+// add prod/build vari
+var URL = ""
 var PORT = 50051
 
 func main() {
