@@ -2,23 +2,32 @@ package main
 
 import (
 	"fmt"
-	pb "github.com/silverflin/go-rpc/proto"
+	"github.com/joho/godotenv"
 	"github.com/silverflin/go-rpc/internal/services"
+	pb "github.com/silverflin/go-rpc/proto"
 	"google.golang.org/grpc"
 	"log"
 	"net"
+	"os"
 )
 
-// add prod/build vari
-var URL = ""
-var PORT = 50051
-
 func main() {
-	lis, err := net.Listen("tcp", fmt.Sprintf("%v:%d", URL, PORT))
+	var err error
+	if os.Getenv("PRODUCT_MICROSERVICE_ENV") == "PROD" {
+		err = godotenv.Load(".env.production")
+	} else {
+		err = godotenv.Load(".env.development")
+	}
+
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	lis, err := net.Listen("tcp", fmt.Sprintf("%v:%v", os.Getenv("RPC_URL"), os.Getenv("RPC_PORT")))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
-	log.Print(fmt.Sprintf("Listening on %v:%d", URL, PORT))
+	log.Print(fmt.Sprintf("Listening on %v:%v", os.Getenv("RPC_URL"), os.Getenv("RPC_PORT")))
 	var opts []grpc.ServerOption
 	grpcServer := grpc.NewServer(opts...)
 	pb.RegisterProductsServer(grpcServer, newServer())

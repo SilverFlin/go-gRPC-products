@@ -2,19 +2,31 @@ package messaging
 
 import (
 	"context"
+	"fmt"
 	"log"
+	"os"
 	"time"
 
+	"github.com/joho/godotenv"
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
-var conn *amqp.Connection 
+var conn *amqp.Connection
 
-// TODO add prod/build variables
 func init() {
-    var err error
-    conn, err = amqp.Dial("amqp://guest:guest@rabbitmq:5672/")
-    failOnError(err, "Failed to connect to RabbitMQ")
+	var err error
+	if os.Getenv("PRODUCT_MICROSERVICE_ENV") == "PROD" {
+		err = godotenv.Load(".env.production")
+	} else {
+		err = godotenv.Load(".env.development")
+	}
+
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	conn, err = amqp.Dial(fmt.Sprintf("amqp://guest:guest@%v:%v/", os.Getenv("RABBIT_URL"), os.Getenv("RABBIT_PORT")))
+	failOnError(err, "Failed to connect to RabbitMQ")
 }
 
 func failOnError(err error, msg string) {

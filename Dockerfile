@@ -2,6 +2,8 @@ FROM golang:1.22
 
 WORKDIR /app
 
+ENV PRODUCT_MICROSERVICE_ENV PROD
+
 COPY go.mod go.sum ./
 
 RUN go mod download
