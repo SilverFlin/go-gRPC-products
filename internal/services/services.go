@@ -6,39 +6,37 @@ import (
 	"github.com/silverflin/go-rpc/internal/model"
 	pb "github.com/silverflin/go-rpc/proto"
 	"log"
-	"sort"
 )
 
 type ProductListServer struct {
 	pb.UnimplementedProductsServer
 }
 
-func (s ProductListServer) GetProductsByPrice(ctx context.Context, req *pb.ProductListRequest) (*pb.ProductList, error) {
+func (s ProductListServer) GetProductsByPrice(ctx context.Context, req *pb.ProductListRequest) (*pb.CompareProductList, error) {
 	log.Printf("New Request %v", req.ProductName)
-	filteredProductList := &pb.ProductList{Products: make([]*pb.Product, 0)}
-	for _, prod := range model.GetAllProducts() {
-		if prod.Name == req.ProductName {
-			filteredProductList.Products = append(filteredProductList.Products, prod)
+	filteredProductList := &pb.CompareProductList{Product: &pb.Product{}, Prices: make([]*pb.MarketPrice, 0)}
+
+	allProducts := model.GetProducts()
+
+	for _, val := range allProducts.Product {
+		if val.Name == req.ProductName {
+			filteredProductList.Product = val
+			filteredProductList.Prices = model.GetPricesFromProduct(val.Name)
+			break
 		}
 	}
-	OrderProductListByPrice(filteredProductList)
 
 	go messaging.SendToProductQueue("List request")
 
 	return filteredProductList, nil
 }
 
-func (s ProductListServer) GetProductsNames(ctx context.Context, empty *pb.Empty) (*pb.ProductNamesList, error) {
-	log.Print("New Request: products names")
+func (s ProductListServer) GetProducts(ctx context.Context, empty *pb.Empty) (*pb.ProductList, error) {
+	log.Print("New Request: products ")
 
-	productsNames := model.GetProductsNames()
+	productsNames := model.GetProducts()
 
 	go messaging.SendToProductQueue("Products Names Request")
 	return productsNames, nil
 }
 
-func OrderProductListByPrice(l *pb.ProductList) {
-	sort.Slice(l.Products, func(i, j int) bool {
-		return l.Products[i].CurrentPrice > l.Products[j].CurrentPrice
-	})
-}

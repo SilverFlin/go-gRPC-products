@@ -2,65 +2,69 @@ package model
 
 import (
 	pb "github.com/silverflin/go-rpc/proto"
-	time "google.golang.org/protobuf/types/known/timestamppb"
 	"slices"
 )
 
-func GetAllProducts() []*pb.Product {
-	return products
-}
+func GetProducts() *pb.ProductList {
+	productList := &pb.ProductList{Product: make([]*pb.Product, 0)}
 
-func GetProductsNames() *pb.ProductNamesList {
-	productsNames := &pb.ProductNamesList{ProductName: make([]string, 0)}
-
-	for _, val := range GetAllProducts() {
-		if !slices.Contains(productsNames.ProductName, val.Name) {
-			productsNames.ProductName = append(productsNames.ProductName, val.Name)
+	for _, val := range products {
+		if !slices.Contains(productList.Product, val.Product) {
+			productList.Product = append(productList.Product, val.Product)
 		}
 	}
 
-	return productsNames
+	return productList
+}
+
+func GetPricesFromProduct(productName string) []*pb.MarketPrice {
+	for _, val := range products {
+		if val.Product.Name == productName {
+			return val.Prices
+		}
+	}
+	return nil
 }
 
 var products = initializeProducts()
 
-func initializeProducts() []*pb.Product {
-	// Using make to create a slice of Product structs with initial values
-	products := make([]*pb.Product, 0)
+func initializeProducts() []*pb.CompareProductList {
+	// Using make to create a slice of CompareProductList structs with initial values
+	products := make([]*pb.CompareProductList, 0)
 
 	// Assigning initial values to the slice
 	products = append(
 		products,
-		&pb.Product{
-			Id:              "1",
-			Name:            "Dougnuts",
-			CurrentPrice:    30,
-			LastUpdatedTime: time.Now(),
-			Market:          "walmart",
+		&pb.CompareProductList{
+			Product: &pb.Product{
+				Id:       "1",
+				Name:     "Dougnuts",
+				ImageUrl: "", // Set the appropriate URL if available
+				Details:  "", // Add details if needed
+			},
+			Prices: []*pb.MarketPrice{
+				{MarketName: "walmart", Price: 30},
+			},
 		})
 
-	// fake data
-	// TODO replace for db persistence data
-	additionalProducts := []*pb.Product{
-		{Id: "2", Name: "Bagels", CurrentPrice: 25, LastUpdatedTime: time.Now(), Market: "costco"},
-		{Id: "3", Name: "Croissants", CurrentPrice: 35, LastUpdatedTime: time.Now(), Market: "bakery"},
-		{Id: "4", Name: "Muffins", CurrentPrice: 20, LastUpdatedTime: time.Now(), Market: "grocery store"},
-		{Id: "5", Name: "Danishes", CurrentPrice: 28, LastUpdatedTime: time.Now(), Market: "local bakery"},
-		{Id: "6", Name: "Cinnamon Rolls", CurrentPrice: 32, LastUpdatedTime: time.Now(), Market: "cafe"},
-		{Id: "7", Name: "Scones", CurrentPrice: 22, LastUpdatedTime: time.Now(), Market: "coffee shop"},
-		{Id: "8", Name: "Biscuits", CurrentPrice: 18, LastUpdatedTime: time.Now(), Market: "restaurant"},
-		{Id: "9", Name: "Pretzels", CurrentPrice: 15, LastUpdatedTime: time.Now(), Market: "street vendor"},
-		{Id: "10", Name: "Cookies", CurrentPrice: 27, LastUpdatedTime: time.Now(), Market: "bakery"},
-		{Id: "11", Name: "Bagels", CurrentPrice: 30, LastUpdatedTime: time.Now(), Market: "bakery"},
-		{Id: "12", Name: "Cake", CurrentPrice: 40, LastUpdatedTime: time.Now(), Market: "bakery"},
-		{Id: "13", Name: "Pie", CurrentPrice: 35, LastUpdatedTime: time.Now(), Market: "bakery"},
-		{Id: "14", Name: "Cupcakes", CurrentPrice: 25, LastUpdatedTime: time.Now(), Market: "bakery"},
-		{Id: "15", Name: "Cheesecake", CurrentPrice: 50, LastUpdatedTime: time.Now(), Market: "bakery"},
-		{Id: "16", Name: "Tarts", CurrentPrice: 38, LastUpdatedTime: time.Now(), Market: "bakery"},
-		{Id: "17", Name: "Eclairs", CurrentPrice: 45, LastUpdatedTime: time.Now(), Market: "bakery"},
-		{Id: "18", Name: "Macarons", CurrentPrice: 55, LastUpdatedTime: time.Now(), Market: "bakery"},
-		{Id: "19", Name: "Bagels", CurrentPrice: 10, LastUpdatedTime: time.Now(), Market: "bakery"},
-		{Id: "20", Name: "Rolls", CurrentPrice: 12, LastUpdatedTime: time.Now(), Market: "bakery"},
+	// Fake data
+	// TODO: replace with data from the database or any other source
+	additionalProducts := []*pb.CompareProductList{
+		{
+			Product: &pb.Product{Id: "2", Name: "Bagels", ImageUrl: "", Details: ""},
+			Prices: []*pb.MarketPrice{
+				{MarketName: "costco", Price: 25},
+				{MarketName: "local grocery", Price: 27},
+			},
+		},
+		{
+			Product: &pb.Product{Id: "3", Name: "Croissants", ImageUrl: "", Details: ""},
+			Prices: []*pb.MarketPrice{
+				{MarketName: "bakery", Price: 35},
+				{MarketName: "cafe", Price: 38},
+			},
+		},
+		// Add more products with their prices similarly
 	}
 	products = append(products, additionalProducts...)
 	return products

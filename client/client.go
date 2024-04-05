@@ -27,7 +27,7 @@ func main() {
 	fmt.Println(productList)
 
 	fmt.Println("[Getting Product Names]")
-	productNames, err := client.GetProductsNames(context.Background(), &pb.Empty{})
+	productNames, err := client.GetProducts(context.Background(), &pb.Empty{})
 
 	if err != nil {
 		fmt.Println("error at getting products names")
