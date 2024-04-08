@@ -6,9 +6,16 @@ services:
       - "127.0.0.1:27017:27017"
     networks:
         - products_internal_network
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      retries: 5
 
   products-microservice:
-    image: silverflin/product-catalog-microservice:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+        # image: silverflin/product-catalog-microservice:latest
     ports:
       - "0.0.0.0:50051:50051"
     networks:
