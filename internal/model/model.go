@@ -45,9 +45,25 @@ func GetPricesFromProduct(productName string) []*pb.MarketPrice {
 	return nil
 }
 
+type Market struct {
+	id         string
+	MarketName string
+}
+
 func initializeProducts() []*pb.CompareProductList {
 
 	collection := database.Client.Database("profeco-products").Collection("CompareProductList")
+
+	markets := make([]Market, 4)
+
+	markets = append(markets,
+		Market{id: "123", MarketName: "walmart"},
+		Market{id: "124", MarketName: "costco"},
+		Market{id: "125", MarketName: "cafe"},
+		Market{id: "126", MarketName: "soriana"},
+	)
+
+	// kproductList := &pb.ProductList{Product: make([]*pb.Product, 0)}
 
 	collection.DeleteMany(context.Background(), bson.M{})
 	products := []*pb.CompareProductList{
@@ -58,18 +74,29 @@ func initializeProducts() []*pb.CompareProductList {
 				Details:  "Delicious donuts freshly baked every morning",
 			},
 			Prices: []*pb.MarketPrice{
-				{MarketName: "walmart", Price: 30},
+				{
+					MarketName: markets[0].MarketName,
+					Price:      30,
+					Id:         markets[0].id,
+				},
 			},
 		},
-
 		{
 			Product: &pb.Product{
 				Name:     "Bagels",
 				ImageUrl: "https://images.unsplash.com/photo-1664038082440-ee0a677af315?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M",
 			},
 			Prices: []*pb.MarketPrice{
-				{MarketName: "costco", Price: 25},
-				{MarketName: "local grocery", Price: 27},
+				{
+					MarketName: markets[0].MarketName,
+					Price:      25,
+					Id:         markets[0].id,
+				},
+				{
+					MarketName: markets[1].MarketName,
+					Price:      27,
+					Id:         markets[1].id,
+				},
 			},
 		},
 		{
@@ -78,8 +105,16 @@ func initializeProducts() []*pb.CompareProductList {
 				ImageUrl: "https://images.unsplash.com/photo-1623334044303-241021148842?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=",
 			},
 			Prices: []*pb.MarketPrice{
-				{MarketName: "bakery", Price: 35},
-				{MarketName: "cafe", Price: 38},
+				{
+					MarketName: markets[1].MarketName,
+					Price:      35,
+					Id:         markets[1].id,
+				},
+				{
+					MarketName: markets[2].MarketName,
+					Price:      30,
+					Id:         markets[2].id,
+				},
 			},
 		},
 	}
@@ -94,8 +129,6 @@ func initializeProducts() []*pb.CompareProductList {
 		if !ok {
 			log.Fatal("Failed to convert inserted ID to ObjectID")
 		}
-
-		fmt.Println(insertedID.Hex())
 
 		product.Product.Id = insertedID.Hex()
 	}

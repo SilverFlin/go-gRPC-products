@@ -2,6 +2,10 @@ package database
 
 import (
 	"context"
+	"fmt"
+	"os"
+
+	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -9,7 +13,18 @@ import (
 var Client *mongo.Client
 
 func Connect() error {
-	clientOptions := options.Client().ApplyURI("mongodb://mongodb:27017")
+
+	var err error
+
+	if os.Getenv("PRODUCT_MICROSERVICE_ENV") == "PROD" {
+		err = godotenv.Load(".env.production")
+	} else {
+		err = godotenv.Load(".env.development")
+	}
+
+	dbURI := fmt.Sprintf("mongodb://%s:%s", os.Getenv("DB_HOST"), os.Getenv("DB_PORT"))
+
+	clientOptions := options.Client().ApplyURI(dbURI)
 	ctx := context.TODO()
 	client, err := mongo.Connect(ctx, clientOptions)
 	if err != nil {
