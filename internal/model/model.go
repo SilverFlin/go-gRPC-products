@@ -10,9 +10,12 @@ import (
 	pb "github.com/silverflin/go-rpc/proto"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 var products []*pb.CompareProductList
+var mongoCollectionName = "CompareProductList"
+var mongoDatabaseName = "profeco-products"
 
 func init() {
 	err := database.Connect()
@@ -20,7 +23,6 @@ func init() {
 		fmt.Println("Error connecting to MongoDB:", err)
 		return
 	}
-	defer database.Close()
 	products = initializeProducts()
 }
 
@@ -34,6 +36,64 @@ func GetProducts() *pb.ProductList {
 	}
 
 	return productList
+}
+
+func GetProductById(productId string) *pb.Product {
+
+	objID, err := primitive.ObjectIDFromHex(productId)
+	if err != nil {
+		log.Println("Invalid ID format:", err)
+		return nil
+	}
+
+	filter := bson.M{"_id": objID}
+
+	var result pb.CompareProductList
+
+	collection := database.Client.Database(mongoDatabaseName).Collection(mongoCollectionName)
+	err = collection.FindOne(context.TODO(), filter).Decode(&result)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			log.Println("Product not found for ID:", productId)
+		} else {
+			log.Println("Error fetching product:", err)
+		}
+		return nil
+	}
+
+	log.Println("Product found:", &result)
+
+    result.Product.Id = productId
+
+	return result.Product
+}
+
+func GetCompareProductListById(productId string) *pb.CompareProductList {
+
+	objID, err := primitive.ObjectIDFromHex(productId)
+	if err != nil {
+		log.Println("Invalid ID format:", err)
+		return nil
+	}
+
+	filter := bson.M{"_id": objID}
+
+	var result pb.CompareProductList
+
+	collection := database.Client.Database(mongoDatabaseName).Collection(mongoCollectionName)
+	err = collection.FindOne(context.TODO(), filter).Decode(&result)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			log.Println("Product not found for ID:", productId)
+		} else {
+			log.Println("Error fetching product:", err)
+		}
+		return nil
+	}
+
+	log.Println("Product found:", &result)
+
+	return &result
 }
 
 func GetPricesFromProduct(productName string) []*pb.MarketPrice {
@@ -52,9 +112,9 @@ type Market struct {
 
 func initializeProducts() []*pb.CompareProductList {
 
-	collection := database.Client.Database("profeco-products").Collection("CompareProductList")
+	collection := database.Client.Database(mongoDatabaseName).Collection(mongoCollectionName)
 
-	markets := make([]Market, 4)
+	markets := make([]Market, 0)
 
 	markets = append(markets,
 		Market{id: "123", MarketName: "walmart"},
@@ -62,8 +122,6 @@ func initializeProducts() []*pb.CompareProductList {
 		Market{id: "125", MarketName: "cafe"},
 		Market{id: "126", MarketName: "soriana"},
 	)
-
-	// kproductList := &pb.ProductList{Product: make([]*pb.Product, 0)}
 
 	collection.DeleteMany(context.Background(), bson.M{})
 	products := []*pb.CompareProductList{
@@ -160,6 +218,8 @@ func initializeProducts() []*pb.CompareProductList {
 		}
 
 		product.Product.Id = id.Hex()
+
+		log.Println(id.Hex())
 		products = append(products, &product)
 	}
 	if err := cursor.Err(); err != nil {
