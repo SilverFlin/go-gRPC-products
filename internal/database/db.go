@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -12,7 +13,7 @@ import (
 
 var Client *mongo.Client
 
-func Connect() error {
+func init() {
 
 	var err error
 
@@ -22,11 +23,18 @@ func Connect() error {
 		err = godotenv.Load(".env.development")
 	}
 
+	if err != nil {
+		log.Fatal("ENV not loaded")
+		os.Exit(0)
+	}
+
+}
+
+func Connect() error {
 	dbURI := fmt.Sprintf("mongodb://%s:%s", os.Getenv("DB_HOST"), os.Getenv("DB_PORT"))
 
 	clientOptions := options.Client().ApplyURI(dbURI)
-	ctx := context.TODO()
-	client, err := mongo.Connect(ctx, clientOptions)
+	client, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
 		return err
 	}
