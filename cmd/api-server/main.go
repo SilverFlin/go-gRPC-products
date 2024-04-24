@@ -11,8 +11,9 @@ import (
 	"os"
 )
 
-func main() {
+func init() {
 	var err error
+
 	if os.Getenv("PRODUCT_MICROSERVICE_ENV") == "PROD" {
 		err = godotenv.Load(".env.production")
 	} else {
@@ -22,12 +23,17 @@ func main() {
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
+}
 
-	lis, err := net.Listen("tcp", fmt.Sprintf("%v:%v", os.Getenv("RPC_URL"), os.Getenv("RPC_PORT")))
+func main() {
+	rpcURI := fmt.Sprintf("%v:%v", os.Getenv("RPC_URL"), os.Getenv("RPC_PORT"))
+	lis, err := net.Listen("tcp", rpcURI)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
-	log.Print(fmt.Sprintf("Listening on %v:%v", os.Getenv("RPC_URL"), os.Getenv("RPC_PORT")))
+
+	log.Print(fmt.Sprintf("Listening on %v", rpcURI))
+
 	var opts []grpc.ServerOption
 	grpcServer := grpc.NewServer(opts...)
 	pb.RegisterProductsServer(grpcServer, newServer())

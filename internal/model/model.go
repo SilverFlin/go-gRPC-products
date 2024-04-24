@@ -38,6 +38,20 @@ func GetProducts() *pb.ProductList {
 	return productList
 }
 
+func GetProductPricesByProductName(name string) *pb.CompareProductList {
+	allProducts := GetProducts()
+
+	for _, val := range allProducts.Product {
+		if val.Name == name {
+			filteredProductList := pb.CompareProductList{}
+			filteredProductList.Product = val
+			filteredProductList.Prices = GetPricesFromProduct(val.Name)
+            return &filteredProductList
+		}
+	}
+	return nil
+}
+
 func GetProductById(productId string) *pb.Product {
 
 	objID, err := primitive.ObjectIDFromHex(productId)
@@ -63,7 +77,7 @@ func GetProductById(productId string) *pb.Product {
 
 	log.Println("Product found:", &result)
 
-    result.Product.Id = productId
+	result.Product.Id = productId
 
 	return result.Product
 }

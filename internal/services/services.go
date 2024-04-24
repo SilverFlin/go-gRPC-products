@@ -16,16 +16,11 @@ type ProductListServer struct {
 
 func (s ProductListServer) GetProductsByPrice(ctx context.Context, req *pb.ProductListRequest) (*pb.CompareProductList, error) {
 	log.Printf("New Request %v", req.ProductName)
-	filteredProductList := &pb.CompareProductList{Product: &pb.Product{}, Prices: make([]*pb.MarketPrice, 0)}
 
-	allProducts := model.GetProducts()
+	filteredProductList := model.GetProductPricesByProductName(req.ProductName)
 
-	for _, val := range allProducts.Product {
-		if val.Name == req.ProductName {
-			filteredProductList.Product = val
-			filteredProductList.Prices = model.GetPricesFromProduct(val.Name)
-			break
-		}
+	if filteredProductList == nil {
+		return nil, errors.New("Product not found")
 	}
 
 	go messaging.SendToProductQueue("List request")

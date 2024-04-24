@@ -22,26 +22,26 @@ func main() {
 	fmt.Println("\n[Getting Product List: Bagels]")
 	productList, err := client.GetProductsByPrice(context.Background(), &pb.ProductListRequest{ProductName: "Bagels"})
 	if err != nil {
-		fmt.Println("error at getting products")
+		fmt.Printf("error at getting products: %s", err.Error())
+	} else {
+		fmt.Println(productList)
 	}
-	fmt.Println(productList)
 
 	fmt.Println("\n[Getting Product Names]")
 	productNames, err := client.GetProducts(context.Background(), &pb.Empty{})
-
 	if err != nil {
 		fmt.Println("error at getting products names")
+	} else {
+		fmt.Println(productNames)
 	}
-	fmt.Println(productNames)
 
 	fmt.Println("\n[Getting Product By Non Existent Id]")
-
 	nonExistentProduct, err := client.GetProductById(context.Background(), &pb.ProductByIdRequest{ProductId: "randomId"})
-
 	if err != nil {
 		fmt.Println("randomId product not found")
+	} else {
+		fmt.Println(nonExistentProduct)
 	}
-	fmt.Println(nonExistentProduct)
 
 	productId := "6628019c58bb122921954f5a"
 
