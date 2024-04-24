@@ -55,7 +55,6 @@ func getProductQueue(ch *amqp.Channel) (amqp.Queue, error) {
 	}
 
 	return q, nil
-
 }
 
 func SendToProductQueue(message string) {

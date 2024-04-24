@@ -2,13 +2,14 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"net"
+	"os"
+
 	"github.com/joho/godotenv"
 	"github.com/silverflin/go-rpc/internal/services"
 	pb "github.com/silverflin/go-rpc/proto"
 	"google.golang.org/grpc"
-	"log"
-	"net"
-	"os"
 )
 
 func init() {

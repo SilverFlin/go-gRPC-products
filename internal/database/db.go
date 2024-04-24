@@ -14,7 +14,6 @@ import (
 var Client *mongo.Client
 
 func init() {
-
 	var err error
 
 	if os.Getenv("PRODUCT_MICROSERVICE_ENV") == "PROD" {
@@ -27,7 +26,6 @@ func init() {
 		log.Fatal("ENV not loaded")
 		os.Exit(0)
 	}
-
 }
 
 func Connect() error {

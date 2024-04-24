@@ -3,10 +3,11 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
+
 	pb "github.com/silverflin/go-rpc/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-	"log"
 )
 
 func main() {
@@ -48,7 +49,6 @@ func main() {
 	fmt.Println("\n[Getting Product By Id]")
 
 	product, err := client.GetProductById(context.Background(), &pb.ProductByIdRequest{ProductId: productId})
-
 	if err != nil {
 		fmt.Println("Product by id not found")
 	}
@@ -57,7 +57,6 @@ func main() {
 	fmt.Println("\n[Getting CompareProductList By Id]")
 
 	compareProductList, err := client.GetCompareProductListById(context.Background(), &pb.ProductByIdRequest{ProductId: productId})
-
 	if err != nil {
 		fmt.Println("CompareProductList by id not found")
 	}

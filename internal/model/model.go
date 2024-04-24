@@ -13,9 +13,11 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-var products []*pb.CompareProductList
-var mongoCollectionName = "CompareProductList"
-var mongoDatabaseName = "profeco-products"
+var (
+	products            []*pb.CompareProductList
+	mongoCollectionName = "CompareProductList"
+	mongoDatabaseName   = "profeco-products"
+)
 
 func init() {
 	err := database.Connect()
@@ -46,14 +48,13 @@ func GetProductPricesByProductName(name string) *pb.CompareProductList {
 			filteredProductList := pb.CompareProductList{}
 			filteredProductList.Product = val
 			filteredProductList.Prices = GetPricesFromProduct(val.Name)
-            return &filteredProductList
+			return &filteredProductList
 		}
 	}
 	return nil
 }
 
 func GetProductById(productId string) *pb.Product {
-
 	objID, err := primitive.ObjectIDFromHex(productId)
 	if err != nil {
 		log.Println("Invalid ID format:", err)
@@ -83,7 +84,6 @@ func GetProductById(productId string) *pb.Product {
 }
 
 func GetCompareProductListById(productId string) *pb.CompareProductList {
-
 	objID, err := primitive.ObjectIDFromHex(productId)
 	if err != nil {
 		log.Println("Invalid ID format:", err)
@@ -125,7 +125,6 @@ type Market struct {
 }
 
 func initializeProducts() []*pb.CompareProductList {
-
 	collection := database.Client.Database(mongoDatabaseName).Collection(mongoCollectionName)
 
 	markets := make([]Market, 0)
